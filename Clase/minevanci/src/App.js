@@ -54,6 +54,9 @@ class App extends Component{
       this.setState({posicionY:n});
       }
   }
+  generarmina(){
+    
+  }
   render(){
   return (
     <div className="App">
@@ -74,6 +77,8 @@ class App extends Component{
     localizadorX={this.state.posicionX}
     localizadorY={this.state.posicionY}
     minas={this.state.minas}
+    fila={this.state.filas}
+    columna={this.state.columnas}
     />
     </div>
   );

@@ -2,20 +2,18 @@ import React from 'react';
 import { Button } from 'reactstrap';
 
 const MatrizComponent = (props) => {
-  // Crear una matriz de 10x10
-  const matriz = Array.from({ length: 10 }, () => Array(10).fill(null));
+  // Crear una matriz de 10x10 con los parametros de antes
+  let filas= props.fila;
+  let columnas=props.columna;
+  const matriz = Array.from({ length: filas }, () => Array(columnas).fill(null));
 
   // Llenar la matriz con valores utilizando un bucle for
-  let contador = 1;
-  for (let i = 0; i < 10; i++) {
-    for (let j = 0; j < 10; j++) {
-      matriz[i][j] = <Button>O</Button>;
-    }
-  }
+ 
+  
 
   
   const obtenerColorFondo = (fila, columna) => {
-    return fila === props.localizadorX && columna === props.localizadorY ? 'red' : 'white';
+    return fila === props.localizadorX && columna === props.localizadorY ? 'red' : 'grey';
   };
 
   return (
@@ -25,10 +23,10 @@ const MatrizComponent = (props) => {
       <table>
         {matriz.map((fila, filaIndex) => (
           <tr key={filaIndex}>
-            {fila.map((col, columnaInd) => (
+            {fila.map((columna, columnaInd) => (
               <td key={columnaInd}>
                 <Button style={{ backgroundColor: obtenerColorFondo(filaIndex, columnaInd) }}>
-                  J
+                  h
                 </Button>
               </td>
             ))}
