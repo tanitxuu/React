@@ -1,33 +1,49 @@
 import React from 'react';
 import { Button } from 'reactstrap';
 
-const MatrizComponent = (props) => {
-  // Crear una matriz de 10x10 con los parametros de antes
-  let filas= props.fila;
-  let columnas=props.columna;
-  const matriz = Array.from({ length: filas }, () => Array(columnas).fill(null));
+const Campo = (props) => {
+  // Crear una matriz de 10x10
+  const matriz = Array.from({ length: props.filas }, () => Array(props.columnas).fill(null));
 
-  // Llenar la matriz con valores utilizando un bucle for
- 
-  
+  //Funcion para obtener un numero aleatorio
+  const numeroAlea = (max) => {
+    return Math.floor(Math.random() * max);
+  }
 
-  
   const obtenerColorFondo = (fila, columna) => {
-    return fila === props.localizadorX && columna === props.localizadorY ? 'red' : 'grey';
+    return fila === props.localizadorX && columna === props.localizadorY ? 'red' : 'white';
   };
+
+  const ponerMinas = () => {
+    let minas = 0;
+    while (minas !== props.contador) {
+      let i = numeroAlea(props.filas);
+      let j = numeroAlea(props.columnas);
+      if ((i === 0 && j === 0) || (i === props.filas - 1 && j === props.columnas - 1)) {
+        // Evitar colocar minas en la posición inicial y final
+      } else if (!matriz[i][j]) {
+        minas++;
+        matriz[i][j] = 'X';
+      }
+    }
+  }
+
+  ponerMinas(); // Llama a ponerMinas directamente después de la creación de la matriz
 
   return (
     <div className="tableroJuego">
       <h2>TABLERO DE JUEGO</h2>
-      <p>POSICION DEL JUGADOR: [{props.localizadorX}], [{props.localizadorY}]</p>
+      <p>POSICION DEL JUGADOR: {props.localizadorX}, {props.localizadorY}</p>
       <table>
         {matriz.map((fila, filaIndex) => (
           <tr key={filaIndex}>
-            {fila.map((columna, columnaInd) => (
+            {fila.map((col, columnaInd) => (
               <td key={columnaInd}>
-                <Button style={{ backgroundColor: obtenerColorFondo(filaIndex, columnaInd) }}>
-                  h
-                </Button>
+                {col === 'X' ? (
+                  <Button style={{ backgroundColor: obtenerColorFondo(filaIndex, columnaInd) }}>X</Button>
+                ) : (
+                  <Button style={{ backgroundColor: obtenerColorFondo(filaIndex, columnaInd) }}>P</Button>
+                )}
               </td>
             ))}
           </tr>
@@ -36,5 +52,7 @@ const MatrizComponent = (props) => {
     </div>
   );
 };
+//X es la mina
+//P es el jugador
 
-export default MatrizComponent;
+export default Campo;

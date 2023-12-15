@@ -1,10 +1,9 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-import React from 'react';
 import { Component } from 'react';
 import Selectorminas from './componentes/Selectorminas';
 import Botonera from './componentes/Botonera';
-import Tablero from './componentes/Campo';
+import Campo from './componentes/Campo';
 
 class App extends Component{
   constructor(props) {
@@ -73,7 +72,7 @@ class App extends Component{
       posicion1={this.state.posicionX}
       posicion2={this.state.posicionY}
     />
-    <Tablero
+    <Campo
     localizadorX={this.state.posicionX}
     localizadorY={this.state.posicionY}
     minas={this.state.minas}
