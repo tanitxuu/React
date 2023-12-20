@@ -30,7 +30,7 @@ class App extends Component {
   }
   click(x, y) {
     if (!this.state.partida) return
-    if (!x ==0) return
+    if (!x == 0) return
     else {
       if (this.state.turno) {
         let lista = this.state.listaColores
