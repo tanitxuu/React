@@ -1,73 +1,81 @@
 import React, { Component } from 'react';
+import { Button, Row, Col } from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Button } from 'reactstrap';
+import './App.css';
 
-const Tablero = (props) => {
-  const tablero = new Array(9).fill(null).map(() => new Array(9).fill(null));
+const MapaBotones = (props) => {
 
-  for (let i = 0; i < tablero.length; i++) {
-    for (let j = 0; j < tablero[i].length; j++) {
-      tablero[i][j] = "X";
+  let lista = []
+  for (let i = 0; i < props.tablero.length; i++) {
+    let lista2 = []
+    for (let j = 0; j < props.tablero[i].length; j++) {
+      lista2.push(<Button outline color={props.color} onClick={(i, j) => props.click(i, j)} />)
+
     }
+    lista.push(<Row><Col>{lista2}</Col></Row>)
   }
 
-  return (
-    <div className="tableroJuego">
-      <h2>Turno de: {props.turno ? 'Azules' : 'Rojos'}</h2>
-      {tablero.map((fila, i) => (
-        <div key={i} className="fila">
-          {fila.map((columna, j) => (
-            <span key={`${i}-${j}`} className="columna">
-              <Button outline color={props.color} onClick={props.cambiarTurno}></Button>
-            </span>
-          ))}
-        </div>
-      ))}
-    </div>
-  );
-};
-
+  return (<>{lista}</>)
+}
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      tablero: [],
       listaColores: ["primary", "danger"],
-      turno: false,
-      color: "white",
+      turno: true,
+      partida: true,
+      color: "secondary",
     }
   }
+  click(x, y) {
+    if (!this.state.partida) return
+    if (!x ==0) return
+    else {
+      if (this.state.turno) {
+        let lista = this.state.listaColores
+        this.setState({ color: lista[0], turno: !this.state.turno })
+      } else {
+        let lista = this.state.listaColores
+        this.setState({ color: lista[1], turno: !this.state.turno })
+      }
 
-  cambiarTurno() {
-    let aux = !this.state.turno;
-    this.setState({ turno: aux });
-    this.cambiarFicha(); // Llama a cambiarFicha después de cambiar el turno
+    }
+
   }
 
-  cambiarFicha() {
-    const { turno, listaColores } = this.state;
-    const color = listaColores.slice(); // Copia el array de colores
-
-    if (turno === false) {
-      this.setState({ color: color[0] });
-    } else {
-      this.setState({ color: color[1] });
+  ganador(x, y) {
+    //ir comprobando
+  }
+  componentWillMount() {
+    let t = []
+    for (let i = 0; i < 9; i++) {
+      let fila = []
+      for (let j = 0; j < 9; j++) {
+        fila.push("secondary")
+      }
+      t.push(fila)
     }
+    this.setState({ tablero: t })
   }
 
   render() {
     return (
       <div className="App">
-        <Tablero
-          turno={this.state.turno}
+        <h2>Turno: {this.state.turno ? "Azul" : "Rojo"}</h2>
+        <MapaBotones
           color={this.state.color}
-          cambiarTurno={() => this.cambiarTurno()}
+          tablero={this.state.tablero}
+          click={(x, y) => this.click(x, y)}
+
         />
       </div>
     );
   }
 }
-
 export default App;
+
+
 
 
 
