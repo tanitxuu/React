@@ -5,33 +5,34 @@ import {
 } from 'reactstrap';
 
 const VentanaModalDiccionario = (props) => {
-  const {
-    className
-  } = props;
-  const [medicamento,setMedicamento]=useState("");
+  const { className } = props;
+  const [medicamento, setMedicamento] = useState("");
+
   const handleChange = (event) => {
-    let medicamento1 = document.getElementById("selectMulti").value;
+    let medicamento1 = event.target.value;
     setMedicamento(medicamento1);
-    
-  }
+  };
 
   return (
     <div>
-      <Modal isOpen={props.mostrar} toggle={props.toggle} className={className} onEntering={"//ESTO SE EJECUTA CUANDO MUESTRAS LA VENTANA"}>
+      <Modal isOpen={props.mostrar} toggle={props.toggle} className={className}>
         <ModalHeader toggle={props.toggle}>{props.titulo}</ModalHeader>
         <ModalBody>
           <FormGroup row>
-            <Label sm={2} > Filtrar: </Label>
+            <Label sm={2}>Filtrar:</Label>
             <Col sm={10}>
-              <Input onChange={handleChange}
+              <Input
+                onChange={handleChange}
                 id="filtro"
                 name="filtro"
-                type="Text" />
+                type="Text"
+              />
             </Col>
           </FormGroup>
           <FormGroup row>
             <Col sm={12}>
-              <Input onChange={handleChange} onClick={handleChange}
+              <Input
+                onChange={handleChange}
                 id="selectMulti"
                 name="selectMulti"
                 type="select"
@@ -46,21 +47,23 @@ const VentanaModalDiccionario = (props) => {
           </FormGroup>
         </ModalBody>
         <ModalFooter>
-          {medicamento}<Button color="primary" onClick={props.medica}>{props.aceptar}</Button>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+          {medicamento}
+          <Button color="primary" onClick={() => { props.medica(medicamento); props.toggle(); } }>
+            {props.aceptar}
+          </Button>
         </ModalFooter>
       </Modal>
     </div>
   );
 }
 
-
-
 class Filter extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isOpen: false,
-      medicamento:"",
+      medicamentoSeleccionar: "",  
+      medicamentoEnmascarar: "", 
     }
   }
 
@@ -68,66 +71,87 @@ class Filter extends Component {
     this.setState({ isOpen: !this.state.isOpen })
   }
 
-  add(datos) {
-    //aqui hacer algo con los datos
-    this.toggleModal();
+ 
+
+  cambiar1(medica) {
+  this.setState({ medicamentoSeleccionar: medica });
   }
-cambiar1 = (event)=>{
-  this.toggleModal()
-  let medi=event.target.selectMulti.value;
-  this.setState({medicamento:medi})
+  cambiar2(medica) {
+
+      this.setState({ medicamentoEnmascarar: medica });
+   
+  }
+  vaciar1() {
+    
+      this.setState({ medicamentoSeleccionar: "" });
+   
+  }
+  vaciar2() {
+
+    this.setState({ medicamentoEnmascarar: "" });
 }
 
-  vaciar(){
-    this.setState({medicamento:""})
-  }
-
   render() {
-    return <>
-      <div>
-        <UncontrolledAccordion
-          defaultOpen={[
-            '1'
-          ]}
-          stayOpen
-        >
-          <AccordionItem>
-            <AccordionHeader targetId="1">
-              GESTION DE FARMACOS
-            </AccordionHeader>
-            <AccordionBody accordionId="1">
-              <Row>
-                <Col>
-                  <Alert color="info">
-                    Incluir X Medicamentos:
-                    <Input type="textarea" name="rxseleccionar" value={this.state.medicamento} />
-                    <Button color="info" medica={(e)=>{this.cambiar(e)}} onClick={()=>{this.toggleModal()}}>Add</Button>
-                    {" "}<Button color="info" onClick={""}>Clear</Button>
-                  </Alert>
-                </Col>
-                <Col>
-                  <Alert color="danger">
-                    Excluir X Medicamentos:
-                    <Input type="textarea" name="rxenmascarar" value={this.state.medicamento}
-                    />
-
-                    <Button color="danger" onClick={()=>{this.toggleModal()}}>Add</Button>
-                    {" "}<Button color="danger" onClick={()=>this.vaciar()}>Clear</Button>
-                  </Alert>
-                </Col>
-              </Row>
-            </AccordionBody>
-          </AccordionItem>
-        </UncontrolledAccordion>
-      </div>
-      <VentanaModalDiccionario 
-        add={(datos) => this.add(datos)} 
-        mostrar={this.state.isOpen} 
-        aceptar={"Añadir"}
-        titulo={"VENTANA MODAL"}
-      />
-      <br />
-    </>
+    return (
+      <>
+        <div>
+          <UncontrolledAccordion
+            defaultOpen={[
+              '1'
+            ]}
+            stayOpen
+          >
+            <AccordionItem>
+              <AccordionHeader targetId="1">
+                GESTION DE FARMACOS
+              </AccordionHeader>
+              <AccordionBody accordionId="1">
+                <Row>
+                  <Col>
+                    <Alert color="info">
+                      Incluir X Medicamentos:
+                      <Input
+                        type="textarea"
+                        name="rxseleccionar"
+                        value={this.state.medicamentoSeleccionar}
+                      />
+                      <Button
+                        color="info"
+                        onClick={() => { this.toggleModal(); }}
+                      >
+                        Add
+                      </Button>{" "}
+                      <Button color="info" onClick={() => this.vaciar1()}>Clear</Button>
+                    </Alert>
+                  </Col>
+                  <Col>
+                    <Alert color="danger">
+                      Excluir X Medicamentos:
+                      <Input
+                        type="textarea"
+                        name="rxenmascarar"
+                        value={this.state.medicamentoEnmascarar}
+                      />
+                      <Button color="danger" onClick={() => { this.toggleModal(); }}>Add</Button>{" "}
+                      <Button color="danger" onClick={() => this.vaciar2()}>Clear</Button>
+                    </Alert>
+                  </Col>
+                </Row>
+              </AccordionBody>
+            </AccordionItem>
+          </UncontrolledAccordion>
+        </div>
+        <VentanaModalDiccionario
+          medica1={(medica) => this.cambiar1(medica)}
+          medica2={(medica) => this.cambiar2(medica)}
+          toggle={() => this.toggleModal()}
+          mostrar={this.state.isOpen}
+          aceptar={"Añadir"}
+          titulo={"VENTANA MODAL"}
+        />
+        <br />
+      </>
+    );
   }
 }
 
