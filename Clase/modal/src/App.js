@@ -7,7 +7,6 @@ import {
 const VentanaModalDiccionario = (props) => {
   const { className } = props;
   const [medicamento, setMedicamento] = useState("");
-  
 
   const handleChange = (event) => {
     let medicamento1 = event.target.value;
@@ -34,7 +33,6 @@ const VentanaModalDiccionario = (props) => {
             <Col sm={12}>
               <Input
                 onChange={handleChange}
-                onClick={handleChange}
                 id="selectMulti"
                 name="selectMulti"
                 type="select"
@@ -50,7 +48,7 @@ const VentanaModalDiccionario = (props) => {
         </ModalBody>
         <ModalFooter>
           {medicamento}
-          <Button color={props.tipoBoton} onClick={() => {props.medica(medicamento); } }>
+          <Button color="primary" onClick={() => { props.medica(medicamento); props.toggle(); } }>
             {props.aceptar}
           </Button>
         </ModalFooter>
@@ -64,24 +62,21 @@ class Filter extends Component {
     super(props);
     this.state = {
       isOpen: false,
-      tipoBoton: "",
-      medicamentoSeleccionar: "",
-      medicamentoEnmascarar: "",
+      medicamentoSeleccionar: "",  
+      medicamentoEnmascarar: "", 
     }
   }
 
-  toggleModal(tipoBoton) {
-    this.setState({ isOpen: !this.state.isOpen, tipoBoton});
+  toggleModal() {
+    this.setState({ isOpen: !this.state.isOpen })
   }
+
+ 
 
   cambiar1(medica) {
-    if (this.state.tipoBoton === 'primary') {
-      this.setState({ medicamentoSeleccionar: medica});
-      this.toggleModal()
-    } else {
-      this.setState({ medicamentoEnmascarar: medica});
-      this.toggleModal()
-    }
+
+  
+  this.setState({ medicamentoSeleccionar: medica });
   }
   
   vaciar1() {
@@ -118,8 +113,12 @@ class Filter extends Component {
                         name="rxseleccionar"
                         value={this.state.medicamentoSeleccionar}
                       />
-                      <Button color="info" onClick={() =>{ this.toggleModal('primary'); }}>Add</Button>{" "}
-                      
+                      <Button
+                        color="info"
+                        onClick={() => { this.toggleModal(); }}
+                      >
+                        Add
+                      </Button>{" "}
                       <Button color="info" onClick={() => this.vaciar1()}>Clear</Button>
                     </Alert>
                   </Col>
@@ -131,7 +130,7 @@ class Filter extends Component {
                         name="rxenmascarar"
                         value={this.state.medicamentoEnmascarar}
                       />
-                      <Button color="danger" onClick={() => { this.toggleModal('danger'); }}>Add</Button>{" "}
+                      <Button color="danger" onClick={() => { this.toggleModal(); }}>Add</Button>{" "}
                       <Button color="danger" onClick={() => this.vaciar2()}>Clear</Button>
                     </Alert>
                   </Col>
@@ -141,10 +140,11 @@ class Filter extends Component {
           </UncontrolledAccordion>
         </div>
         <VentanaModalDiccionario
-          medica={(medica) => this.cambiar1(medica)}
+          medica1={(medica) => this.cambiar1(medica)}
+          medica2={(medica) => this.cambiar2(medica)}
+          toggle={() => this.toggleModal()}
           mostrar={this.state.isOpen}
           aceptar={"Añadir"}
-          tipoBoton={this.state.tipoBoton}
           titulo={"VENTANA MODAL"}
         />
         <br />
@@ -154,6 +154,7 @@ class Filter extends Component {
 }
 
 class App extends Component {
+  
   render() {
     return (
       <div className="App">
