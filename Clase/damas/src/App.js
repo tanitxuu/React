@@ -39,9 +39,11 @@ this.state = {
 tablero:[],
 color1:"secondary",
 color2:"success",
+posicionX:0,
+posicionY:0,
 };
 }
-moverpeon(x,y){
+moverpeon(x,y,color){
   if (color === this.state.color1 || color === this.state.color2) {
     this.setState({ color1: this.state.color2, color2: this.state.color1 });
   }
@@ -68,6 +70,8 @@ return (
   gris={this.state.color1}
   verde={this.state.color2}
   moverpeon={(color) => this.moverpeon(color)}
+  localizadorX={this.state.posicionX}
+  localizadorY={this.state.posicionY}
   />
 </header>
 </div>

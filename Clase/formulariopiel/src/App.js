@@ -14,19 +14,20 @@ class App extends Component {
       preguntas: PREGUNTAS,
       logg: true,
       resul: RESULTADO,
-      contador: 0,
+      contador: [],
       color: ['info', 'success'],
-      desactivar: [], // Estado para almacenar las preguntas desactivadas
+      desactivar:[],
+     
     }
   }
 
   contar = (valor, orden) => {
-    if (!this.state.desactivar.includes(orden)) {
-      this.setState(prevState => ({
-        contador: prevState.contador + valor,
-        desactivar: [...prevState.desactivar, orden], // Agrega el orden a la lista de desactivar si no está incluido
-      }));
-      console.log(this.state.contador)
+    if (!this.state.desactivar.find(v=>v.orden===orden)) {
+      let obj={"orden":orden,"valor":valor}
+      this.state.contador.push(obj)
+      this.state.desactivar.push(obj)
+      let aa=this.state.contador.map(v=>v)
+      console.log(aa)
     }
   }
 
@@ -35,7 +36,11 @@ class App extends Component {
       logg: !prevState.logg,
     }));
   }
-
+  respuesta() {
+    let sumaTotal = this.state.contador.reduce((total, obj) => total + obj.valor, 0);
+  return sumaTotal;
+  }
+  
   render() {
     let obj = (
       <>
@@ -45,7 +50,7 @@ class App extends Component {
       </>
     );
     if (!this.state.logg) {
-      obj = <Resultado result={this.state.resul} contador={this.state.contador} />;
+      obj = <Resultado result={this.state.resul} contador={()=>this.respuesta()} img={this.state.img}/>;
     }
     return (
       <div className="App">
