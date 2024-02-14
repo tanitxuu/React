@@ -17,7 +17,7 @@ class App extends Component {
       contador: [],
       color: ['info', 'success'],
       desactivar:[],
-     
+      
     }
   }
 
@@ -37,15 +37,22 @@ class App extends Component {
     }));
   }
   respuesta() {
-    let sumaTotal = this.state.contador.reduce((total, obj) => total + obj.valor, 0);
-  return sumaTotal;
+    const numeroPreguntasRespondidas = this.state.contador.length;
+    if (numeroPreguntasRespondidas === 7) {
+        return this.state.contador.reduce((total, obj) => total + obj.valor, 0);
+    } else {
+        return undefined;
+       
+    }
   }
   
   render() {
+   
     let obj = (
       <>
         <h1>Averigua tu fototipo</h1>
         <Pregunta preguns={this.state.preguntas} contar={this.contar} color={this.state.color} resultado={this.resultado} disabless={this.state.desactivar} />
+      
         <Button onClick={this.resultado} color={this.state.color[1]} style={{ width: '30rem', margin: '15px' }}>Resultado</Button>
       </>
     );
