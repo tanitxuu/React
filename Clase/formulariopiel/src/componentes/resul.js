@@ -7,7 +7,7 @@ export default function Resultado(props) {
     const sumaContador = props.contador();
 
     const resultado = props.result.find(v => v.min < sumaContador && v.max > sumaContador);
-
+    props.login(resultado.tipo)
     return (
         <Row>
             <Col sm="6">

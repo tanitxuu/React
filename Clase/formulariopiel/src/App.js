@@ -6,6 +6,8 @@ import './App.css';
 import { Button } from 'reactstrap';
 import { RESULTADO } from './componentes/respuesta';
 import Resultado from './componentes/resul';
+import { PIEL } from './php/datos';
+import axios from 'axios';
 
 class App extends Component {
   constructor(props) {
@@ -40,12 +42,14 @@ class App extends Component {
     const numeroPreguntasRespondidas = this.state.contador.length;
     if (numeroPreguntasRespondidas === 7) {
         return this.state.contador.reduce((total, obj) => total + obj.valor, 0);
-    } else {
-        return undefined;
-       
-    }
+    
+  }}
+  userLogin(fototipo){
+    
+    axios.post(PIEL,JSON.stringify({
+      fichero:fototipo,
+    }))
   }
-  
   render() {
    
     let obj = (
@@ -57,7 +61,7 @@ class App extends Component {
       </>
     );
     if (!this.state.logg) {
-      obj = <Resultado result={this.state.resul} contador={()=>this.respuesta()} img={this.state.img}/>;
+      obj = <Resultado result={this.state.resul} contador={(fototipo)=>this.respuesta(fototipo)} img={this.state.img} login={(fototipo)=>this.userLogin(fototipo)}/>;
     }
     return (
       <div className="App">
