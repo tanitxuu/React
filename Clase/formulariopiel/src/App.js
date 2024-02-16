@@ -39,13 +39,16 @@ class App extends Component {
     }));
   }
   respuesta() {
+    if (this.state.logg) {
+      return null;
+    }
     const numeroPreguntasRespondidas = this.state.contador.length;
     if (numeroPreguntasRespondidas === 7) {
-        return this.state.contador.reduce((total, obj) => total + obj.valor, 0);
-    
-  }}
+      return this.state.contador.reduce((total, obj) => total + obj.valor, 0);
+    }
+    return null;
+  }
   userLogin(fototipo){
-    
     axios.post(PIEL,JSON.stringify({
       fichero:fototipo,
     }))
@@ -61,7 +64,7 @@ class App extends Component {
       </>
     );
     if (!this.state.logg) {
-      obj = <Resultado result={this.state.resul} contador={(fototipo)=>this.respuesta(fototipo)} img={this.state.img} login={(fototipo)=>this.userLogin(fototipo)}/>;
+      obj = <Resultado result={this.state.resul} contador={(fototipo)=>this.respuesta(fototipo)} img={this.state.img} login={(fototipo)=>this.userLogin(fototipo)} logg={this.state.logg}/>;
     }
     return (
       <div className="App">
@@ -72,4 +75,5 @@ class App extends Component {
 }
 
 export default App;
+
 
