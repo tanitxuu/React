@@ -2,34 +2,34 @@ import React, { Component, useState } from 'react';
 import { Button,ListGroup,ListGroupItem} from 'reactstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css';
-function Lista(props){
-
-return(
-
+function Lista(props) {
+  return (
     <>
+      <h4>Lista de Supermercados</h4>
       <ListGroup>
-        <ListGroupItem>Cras justo odio</ListGroupItem>
-        <ListGroupItem>Dapibus ac facilisis in</ListGroupItem>
-        <ListGroupItem>Morbi leo risus</ListGroupItem>
-        <ListGroupItem>Porta ac consectetur ac</ListGroupItem>
-        <ListGroupItem>Vestibulum at eros</ListGroupItem>
+        {props.superpuestos.map((supermercado, index) => (
+          <ListGroupItem key={index}>
+            Nombre: {supermercado.nombre}, Posición: {supermercado.posicion}, Clientes: {supermercado.personas}
+          </ListGroupItem>
+        ))}
       </ListGroup>
     </>
   );
 }
 
-
-
 function Selector(props) {
   const [opcionSeleccionada, setOpcionSeleccionada] = useState(false);
 
-  const handleChange = (color) => {
+  const handleChange = (e) => {
+    const color = e.target.value;
     props.cambiar(color);
     setOpcionSeleccionada(true);
-  }
+  };
 
   const contado = props.super.map((supermercado, i) => (
-    <p key={i}>{supermercado.nombre}: {supermercado.contador}</p>
+    <p key={i}>
+      {supermercado.nombre}: {supermercado.contador}
+    </p>
   ));
 
   const opciones = props.super.map((supermercado, i) => (
@@ -40,7 +40,7 @@ function Selector(props) {
 
   return (
     <>
-      <select onChange={(e) => handleChange(e.target.value)} defaultValue={props.super[0].color}>
+      <select onChange={handleChange} defaultValue={props.super[0].color}>
         {opciones}
       </select>
       {contado} {/* Mostrar el contador siempre */}
@@ -49,24 +49,49 @@ function Selector(props) {
 }
 
 function Botonera(props) {
+  const [colores, setColores] = useState({});
+  const [botonesPulsados, setBotonesPulsados] = useState([]);
   const [persona, setPersona] = useState('');
   const [posicion, setPosicion] = useState('');
-  const [colores, setColores] = useState({});
 
   const handleClick = (valor, fila, columna) => {
-    const newColores = { ...colores };
     const key = `${fila}-${columna}`;
+    // Verificar si el botón ya está pulsado
+    if (colores[key]) {
+      return; // Si ya está pulsado, salir de la función sin hacer nada
+    }
+
+    const newColores = { ...colores };
     newColores[key] = props.color;
     setColores(newColores);
-    setPersona(valor);
-    setPosicion(`Fila ${fila + 1}, Columna ${columna + 1}`);
+
+    // Registrar el botón pulsado
+    setBotonesPulsados([...botonesPulsados, key]);
 
     // Obtener el color del botón que se está clicando
     const colorBoton = newColores[key];
-    
-    props.cambiarColor(colorBoton);
-    props.supermercado(colorBoton, posicion);
-  }
+
+    // Actualizar la persona seleccionada y la posición
+    setPersona(valor);
+    setPosicion(`Fila ${fila + 1}, Columna ${columna + 1}`);
+
+    // Calcular el número de personas alrededor del supermercado
+    let totalPersonas = parseInt(valor);
+    const filaInicio = Math.max(0, fila - 1);
+    const filaFin = Math.min(props.table.length - 1, fila + 1);
+    const columnaInicio = Math.max(0, columna - 1);
+    const columnaFin = Math.min(props.table[0].length - 1, columna + 1);
+    for (let i = filaInicio; i <= filaFin; i++) {
+      for (let j = columnaInicio; j <= columnaFin; j++) {
+        if (i !== fila || j !== columna) {
+          totalPersonas += parseInt(props.table[i][j]);
+        }
+      }
+    }
+
+    // Llamar a la función para actualizar el supermercado
+    props.supermercado(colorBoton, `Fila ${fila + 1}, Columna ${columna + 1}`, totalPersonas);
+  };
 
   const tablero = props.table.map((fila, i) => (
     <tr key={i}>
@@ -74,7 +99,14 @@ function Botonera(props) {
         const key = `${i}-${j}`;
         return (
           <td key={j}>
-            <Button color={colores[key]} outline={!props.color} disabled={!props.color} onClick={() => handleClick(valor, i, j)}>{valor}</Button>
+            <Button
+              color={colores[key]}
+              outline={!props.color}
+              disabled={!props.color || botonesPulsados.includes(key)}
+              onClick={() => handleClick(valor, i, j)}
+            >
+              {valor}
+            </Button>
           </td>
         );
       })}
@@ -83,6 +115,7 @@ function Botonera(props) {
 
   return (
     <>
+      <Selector super={props.super} cambiar={props.cambiar} />
       <table>
         <tbody>{tablero}</tbody>
       </table>
@@ -91,7 +124,6 @@ function Botonera(props) {
     </>
   );
 }
-
 
 class App extends Component {
   constructor(props) {
@@ -109,45 +141,55 @@ class App extends Component {
         [1, 0, 12, 3, 0, 0, 21, 2, 2]
       ],
       supermercado: [
-        { 'nombre': 'Mercadona', 'color': 'success', 'contador': 0 },
-        { 'nombre': 'Lidl', 'color': 'primary', 'contador': 0 },
-        { 'nombre': 'Eroski', 'color': 'danger', 'contador': 0 },
-        { 'nombre': 'BM', 'color': 'warning', 'contador': 0 }
+        { nombre: 'Mercadona', color: 'success', contador: 0 },
+        { nombre: 'Lidl', color: 'primary', contador: 0 },
+        { nombre: 'Eroski', color: 'danger', contador: 0 },
+        { nombre: 'BM', color: 'warning', contador: 0 }
       ],
       color: '',
-      superpuestos:[{}],
+      superpuestos: [],
     };
   }
 
-  cambiarColor = (color) => {
-    const supermercadoActualizado = this.state.supermercado.map(s => {
-      if (s.color === color) {
+  cambiar = (color) => {
+    this.setState({ color: color });
+  };
+
+  cambiarColor = (color, isFromSelect) => {
+    const supermercadoActualizado = this.state.supermercado.map((s) => {
+      if (s.color === color && !isFromSelect) {
         return { ...s, contador: s.contador + 1 };
       } else {
         return s;
       }
     });
-    this.setState({ color: color, supermercado: supermercadoActualizado });
-  }
+    this.setState({ supermercado: supermercadoActualizado });
+  };
 
-  supermercado = (color) => {
-    const m = this.state.supermercado.find(v => v.color === color);
-    const t = this.state.supermercado;
-    if (m && m.color === color) {
-      t.forEach(v => {
-        if (v.color === color) {
-          v.contador++;
-        }
-      });
-      this.setState({ supermercado: t });
-    }
-  }
+  supermercado = (color, posicion, personas) => {
+    const nombreSupermercado = this.state.supermercado.find(s => s.color === color).nombre;
+    const nuevoSuperpuesto = {
+      nombre: nombreSupermercado,
+      posicion: posicion,
+      personas: personas,
+    };
+    this.setState((prevState)=> ({
+      superpuestos: [...prevState.superpuestos, nuevoSuperpuesto],
+    }));
+  };
 
   render() {
     return (
       <div className="App">
-        <Selector super={this.state.supermercado} cambiar={this.cambiarColor} />
-        <Botonera table={this.state.poblacion} color={this.state.color} super={this.state.supermercado} cambiarColor={(color) => this.cambiarColor(color)} supermercado={(color) => this.supermercado(color)} />
+        <Botonera
+          table={this.state.poblacion}
+          color={this.state.color}
+          super={this.state.supermercado}
+          cambiarColor={this.cambiarColor}
+          supermercado={this.supermercado}
+          cambiar={this.cambiar}
+        />
+        <Lista superpuestos={this.state.superpuestos} />
       </div>
     );
   }
