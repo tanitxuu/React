@@ -1,1 +1,0 @@
-export const PIEL = "http://localhost/Proyectos/Reactsv/piel.php";
