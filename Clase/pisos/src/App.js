@@ -1,25 +1,34 @@
-import logo from './logo.svg';
-import './App.css';
+// App.js
+import React, { Component } from 'react';
+import { PISOS } from './matrices/pisos';
+import { PISOSX } from './matrices/pisosX';
+import { PRECIOS } from './matrices/precios';
+import { Button } from 'reactstrap';
+import Pregunta from './componentes/preguntas';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+
+class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      pisos:PISOS,
+      x:PISOSX,
+      precio:PRECIOS,
+      preguntas:[],
+      
+    }
+  }
+
+  
+  render() {
+   
+    return (
+      <div className="App">
+     <Pregunta preguntas={this.state.preguntas}/>
+      </div>
+    );
+  }
 }
 
 export default App;
