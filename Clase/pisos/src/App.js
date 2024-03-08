@@ -19,7 +19,9 @@ class App extends Component {
       
     }
   }
-
+pisos(){
+  
+}
   
   render() {
    
