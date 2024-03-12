@@ -60,38 +60,36 @@ function Botonera(props) {
     if (colores[key]) {
       return; // Si ya está pulsado, salir de la función sin hacer nada
     }
-
+  
     const newColores = { ...colores };
     newColores[key] = props.color;
     setColores(newColores);
-
+  
     // Registrar el botón pulsado
     setBotonesPulsados([...botonesPulsados, key]);
-
+  
     // Obtener el color del botón que se está clicando
     const colorBoton = newColores[key];
-
+  
     // Actualizar la persona seleccionada y la posición
     setPersona(valor);
     setPosicion(`Fila ${fila + 1}, Columna ${columna + 1}`);
-
+  
     // Calcular el número de personas alrededor del supermercado
     let totalPersonas = parseInt(valor);
-    const filaInicio = Math.max(0, fila - 1);
-    const filaFin = Math.min(props.table.length - 1, fila + 1);
-    const columnaInicio = Math.max(0, columna - 1);
-    const columnaFin = Math.min(props.table[0].length - 1, columna + 1);
-    for (let i = filaInicio; i <= filaFin; i++) {
-      for (let j = columnaInicio; j <= columnaFin; j++) {
-        if (i !== fila || j !== columna) {
-          totalPersonas += parseInt(props.table[i][j]);
-        }
-      }
-    }
-
-    // Llamar a la función para actualizar el supermercado
+    const filas = props.table.length;
+    const columnas = props.table[0].length;
+    const arriba = fila - 1 >= 0 ? parseInt(props.table[fila - 1][columna]) : 0;
+    const abajo = fila + 1 < filas ? parseInt(props.table[fila + 1][columna]) : 0;
+    const izquierda = columna - 1 >= 0 ? parseInt(props.table[fila][columna - 1]) : 0;
+    const derecha = columna + 1 < columnas ? parseInt(props.table[fila][columna + 1]) : 0;
+  
+    totalPersonas += arriba + abajo + izquierda + derecha;
+  
+   
     props.supermercado(colorBoton, `Fila ${fila + 1}, Columna ${columna + 1}`, totalPersonas);
   };
+  
 
   const tablero = props.table.map((fila, i) => (
     <tr key={i}>
@@ -141,11 +139,12 @@ class App extends Component {
         [1, 0, 12, 3, 0, 0, 21, 2, 2]
       ],
       supermercado: [
-        { nombre: 'Mercadona', color: 'success', contador: 0 },
-        { nombre: 'Lidl', color: 'primary', contador: 0 },
-        { nombre: 'Eroski', color: 'danger', contador: 0 },
-        { nombre: 'BM', color: 'warning', contador: 0 }
+        { nombre: 'Mercadona', color: 'success', contador: 0, posicion: [0, 0] },
+        { nombre: 'Lidl', color: 'primary', contador: 0, posicion: [0, 0] },
+        { nombre: 'Eroski', color: 'danger', contador: 0, posicion: [0, 0] },
+        { nombre: 'BM', color: 'warning', contador: 0, posicion: [0, 0] }
       ],
+      
       color: '',
       superpuestos: [],
     };
@@ -173,10 +172,41 @@ class App extends Component {
       posicion: posicion,
       personas: personas,
     };
-    this.setState((prevState)=> ({
-      superpuestos: [...prevState.superpuestos, nuevoSuperpuesto],
-    }));
+  
+    let superpuestosActualizados = [...this.state.superpuestos];
+    const superExistenteIndex = superpuestosActualizados.findIndex(s => s.posicion === posicion);
+  
+    if (superExistenteIndex !== -1) {
+      // Actualizar el valor de personas del supermercado existente
+      superpuestosActualizados[superExistenteIndex].personas = personas;
+    } else {
+      // Agregar el nuevo supermercado a la lista
+      superpuestosActualizados.push(nuevoSuperpuesto);
+    }
+  
+    // Distribuir personas si hay supermercados cercanos
+    const cerca = superpuestosActualizados.filter((supermercado) =>
+      Math.abs(supermercado.posicion[0] - posicion[0]) <= 1 &&
+      Math.abs(supermercado.posicion[1] - posicion[1]) <= 1 &&
+      supermercado.color !== color
+    );
+  
+    if (cerca.length > 0) {
+      // Calcular el total de personas en los supermercados cercanos
+      let totalPersonasCerca = cerca.reduce((total, supermercadoCercano) => total + supermercadoCercano.personas, 0);
+      // Distribuir equitativamente las personas entre los supermercados cercanos
+      const personasPorSuper = Math.floor(personas / (cerca.length + 1));
+      cerca.forEach((supermercadoCercano) => {
+        supermercadoCercano.personas += personasPorSuper;
+      });
+      // Ajustar las personas restantes al primer supermercado cercano si hay sobrantes
+      const personasRestantes = personas - (personasPorSuper * cerca.length);
+      cerca[0].personas += personasRestantes;
+    }
+  
+    this.setState({ superpuestos: superpuestosActualizados });
   };
+  
 
   render() {
     return (

@@ -1,4 +1,3 @@
-// preguntas.js
 import React, { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Button, Card, CardTitle, Col, Row, Form, FormGroup, Label, Input, FormText } from 'reactstrap';
@@ -43,6 +42,7 @@ export default function Pregunta(props) {
         let p = [metros, habitaciones, baños, vistas, garaje, trastero, año, estado, piscina]
         setRespuestas(p)
         console.log(p)
+        props.preguntas(respuestas);
     }
 
     return (
